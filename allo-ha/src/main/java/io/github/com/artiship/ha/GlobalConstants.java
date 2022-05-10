@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.model;
+package io.github.com.artiship.ha;
 
-public interface Service {
-    void start() throws Exception;
-    void stop() throws Exception;
+public class GlobalConstants {
+    public static final String WORKER_GROUP = "/allo/workers";
+    public static final String SCHEDULER_GROUP = "/allo/scheduler";
+    public static final String DEAD_WORKER_GROUP = "/allo/dead/workers";
+    public static final String LOST_TASK_GROUP = "/allo/lost/tasks";
 }

@@ -21,7 +21,7 @@ import io.github.artiship.allo.model.bo.WorkerBo;
 import io.github.artiship.allo.model.ha.ZkScheduler;
 import io.github.artiship.allo.rpc.OsUtils;
 import io.github.artiship.allo.scheduler.core.SchedulerDao;
-import io.github.artiship.allo.model.Service;
+import io.github.artiship.allo.scheduler.core.Service;
 import io.github.com.artiship.ha.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -37,7 +37,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static io.github.artiship.allo.model.GlobalConstants.SCHEDULER_GROUP;
+import static io.github.com.artiship.ha.GlobalConstants.SCHEDULER_GROUP;
 import static io.github.artiship.allo.model.enums.WorkerState.ACTIVE;
 import static io.github.artiship.allo.model.enums.WorkerState.STANDBY;
 import static org.apache.curator.framework.imps.CuratorFrameworkState.STARTED;

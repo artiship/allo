@@ -19,7 +19,7 @@ package io.github.artiship.allo.scheduler.ha;
 
 import io.github.artiship.allo.model.ha.ZkWorker;
 import io.github.artiship.allo.scheduler.core.ResourceManager;
-import io.github.artiship.allo.model.Service;
+import io.github.artiship.allo.scheduler.core.Service;
 import io.github.artiship.allo.scheduler.rest.SchedulerBackend;
 import io.github.com.artiship.ha.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Splitter.on;
 import static com.google.common.collect.Iterables.getLast;
-import static io.github.artiship.allo.model.GlobalConstants.DEAD_WORKER_GROUP;
-import static io.github.artiship.allo.model.GlobalConstants.WORKER_GROUP;
+import static io.github.com.artiship.ha.GlobalConstants.DEAD_WORKER_GROUP;
+import static io.github.com.artiship.ha.GlobalConstants.WORKER_GROUP;
 
 @Slf4j
 @Component

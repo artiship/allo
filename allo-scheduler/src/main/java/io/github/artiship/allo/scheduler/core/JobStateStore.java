@@ -20,7 +20,6 @@ package io.github.artiship.allo.scheduler.core;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import io.github.artiship.allo.database.entity.JobRelation;
-import io.github.artiship.allo.model.Service;
 import io.github.artiship.allo.model.bo.JobBo;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.model.utils.TimeUtils;

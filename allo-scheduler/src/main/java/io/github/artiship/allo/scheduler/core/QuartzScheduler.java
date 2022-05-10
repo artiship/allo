@@ -17,8 +17,21 @@
 
 package io.github.artiship.allo.scheduler.core;
 
-import io.github.artiship.allo.model.bo.TaskBo;
+import io.github.artiship.allo.quartz.QuartzSchedulerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public interface SchedulerService extends Service {
-    TaskBo submit(TaskBo task);
+@Component
+public class QuartzScheduler implements Service {
+    @Autowired private QuartzSchedulerService quartzSchedulerService;
+
+    @Override
+    public void start() throws Exception {
+        quartzSchedulerService.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        quartzSchedulerService.stop();
+    }
 }

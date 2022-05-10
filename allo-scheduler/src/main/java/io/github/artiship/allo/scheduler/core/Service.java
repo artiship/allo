@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.model;
+package io.github.artiship.allo.scheduler.core;
 
-public class GlobalConstants {
-    public static final String WORKER_GROUP = "/allo/workers";
-    public static final String SCHEDULER_GROUP = "/allo/scheduler";
-    public static final String DEAD_WORKER_GROUP = "/allo/dead/workers";
-    public static final String LOST_TASK_GROUP = "/allo/lost/tasks";
-    public static final Long DEFAULT_SIZE = 256 * 1024 * 1024 * 100L;
+public interface Service {
+    void start() throws Exception;
+    void stop() throws Exception;
 }

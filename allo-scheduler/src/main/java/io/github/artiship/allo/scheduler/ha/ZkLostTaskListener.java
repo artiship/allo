@@ -19,7 +19,7 @@ package io.github.artiship.allo.scheduler.ha;
 
 import io.github.artiship.allo.model.exception.TaskNotFoundException;
 import io.github.artiship.allo.model.ha.ZkLostTask;
-import io.github.artiship.allo.model.Service;
+import io.github.artiship.allo.scheduler.core.Service;
 import io.github.artiship.allo.scheduler.rest.SchedulerBackend;
 import io.github.com.artiship.ha.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-import static io.github.artiship.allo.model.GlobalConstants.LOST_TASK_GROUP;
+import static io.github.com.artiship.ha.GlobalConstants.LOST_TASK_GROUP;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 @Slf4j

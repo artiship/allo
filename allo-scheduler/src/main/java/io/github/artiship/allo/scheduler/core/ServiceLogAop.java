@@ -31,7 +31,7 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 @Component
 public class ServiceLogAop {
 
-    @Around("execution(* io.github.artiship.allo.model.Service.start())")
+    @Around("execution(* io.github.artiship.allo.scheduler.core.Service.start())")
     public void serviceStart(ProceedingJoinPoint joinPoint) throws Throwable {
         String serviceName = getServiceName(joinPoint);
         log.info("{} - Starting...", serviceName);
@@ -39,7 +39,7 @@ public class ServiceLogAop {
         log.info("{} - Start completed.", serviceName);
     }
 
-    @Around("execution(* io.github.artiship.allo.model.Service.stop())")
+    @Around("execution(* io.github.artiship.allo.scheduler.core.Service.stop())")
     public void serviceStop(ProceedingJoinPoint joinPoint) throws Throwable {
         String serviceName = getServiceName(joinPoint);
         log.info("{} - Stopping...", serviceName);

@@ -17,8 +17,6 @@
 
 package io.github.artiship.allo.scheduler;
 
-import io.github.artiship.allo.model.Service;
-import io.github.artiship.allo.quartz.QuartzSchedulerService;
 import io.github.artiship.allo.scheduler.core.*;
 import io.github.artiship.allo.scheduler.ha.LeaderElectable;
 import io.github.artiship.allo.scheduler.ha.ZkLeaderElectionAgent;
@@ -48,7 +46,7 @@ public class SchedulerLauncher implements LeaderElectable {
     @Autowired private TaskDispatcher taskDispatcher;
     @Autowired private DependencyScheduler dependencyScheduler;
     @Autowired private MasterRpcServer masterRpcServer;
-    @Autowired private QuartzSchedulerService quartzSchedulerService;
+    @Autowired private QuartzScheduler quartzScheduler;
     @Autowired private ZkLeaderElectionAgent zkLeaderElectionAgent;
     @Autowired private ZkWorkerListener zkWorkerListener;
     @Autowired private ZkLostTaskListener zkLostTaskListener;
@@ -82,7 +80,7 @@ public class SchedulerLauncher implements LeaderElectable {
                         taskDispatcher,
                         dependencyScheduler,
                         retryScheduler,
-                        quartzSchedulerService)
+                        quartzScheduler)
                 .forEach(
                         service -> {
                             services.add(service);

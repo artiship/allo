@@ -17,7 +17,7 @@
 
 package io.github.artiship.allo.scheduler.rpc;
 
-import io.github.artiship.allo.model.Service;
+import io.github.artiship.allo.scheduler.core.Service;
 import io.grpc.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

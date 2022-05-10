@@ -50,20 +50,14 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @Slf4j
 @Component
 public class TaskDispatcher extends AbstractScheduler {
-    @Value("${services.task-dispatcher.thread.count:1}")
-    private int threadCount;
-
-    @Value("${services.task-dispatcher.extract.limit.enable:false}")
-    private boolean extractLimitEnable;
-
-    @Value("${services.task-dispatcher.extract.limit:8}")
-    private int extractLimit;
-
     @Autowired private ResourceManager resourceManager;
     @Autowired private JobStateStore jobStateStore;
     @Autowired private SchedulerDao schedulerDao;
     @Autowired private MasterRpcService masterRpcService;
     @Autowired private TaskOperationCache taskOperationCache;
+
+    @Value("${services.task-dispatcher.thread.count:1}")
+    private int threadCount;
 
     private ReentrantLock jobConcurrencyLock = new ReentrantLock();
 

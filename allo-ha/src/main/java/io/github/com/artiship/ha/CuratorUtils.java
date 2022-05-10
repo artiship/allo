@@ -24,7 +24,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
-import static io.github.artiship.allo.model.GlobalConstants.SCHEDULER_GROUP;
+import static io.github.com.artiship.ha.GlobalConstants.SCHEDULER_GROUP;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Slf4j

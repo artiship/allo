@@ -17,7 +17,6 @@
 
 package io.github.artiship.allo.quartz;
 
-import io.github.artiship.allo.model.Service;
 import io.github.artiship.allo.model.bo.JobBo;
 import io.github.artiship.allo.model.exception.AlloRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerKey.triggerKey;
 
 @Slf4j
-public class QuartzSchedulerService implements Service {
+public class QuartzSchedulerService {
     public static final String DATA_KEY = "data";
     public static final String DEFAULT_TRIGGER_GROUP = "allo";
     public static final String DEFAULT_JOB_GROUP = "allo";
