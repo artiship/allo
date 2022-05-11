@@ -22,99 +22,61 @@ import io.github.artiship.allo.scheduler.ha.LeaderElectable;
 import io.github.artiship.allo.scheduler.ha.ZkLeaderElectionAgent;
 import io.github.artiship.allo.scheduler.ha.ZkLostTaskListener;
 import io.github.artiship.allo.scheduler.ha.ZkWorkerListener;
-import io.github.artiship.allo.scheduler.rpc.MasterRpcServer;
+import io.github.artiship.allo.scheduler.rpc.SchedulerRpcServer;
+import io.github.com.artiship.ha.ServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
-import static com.google.common.collect.Lists.reverse;
-import static java.lang.Runtime.getRuntime;
-
 @Slf4j
-@SpringBootApplication(scanBasePackages = {"io.github.artiship.allo.scheduler", "io.github.artiship.allo.database"})
-public class SchedulerLauncher implements LeaderElectable {
-    private static CountDownLatch isStop = new CountDownLatch(1);
-
+@SpringBootApplication(
+        scanBasePackages = {
+            "io.github.artiship.allo.scheduler",
+            "io.github.artiship.allo.database"
+        })
+public class SchedulerLauncher extends ServiceManager implements LeaderElectable {
     @Autowired private JobStateStore jobStateStore;
     @Autowired private TaskDispatcher taskDispatcher;
     @Autowired private DependencyScheduler dependencyScheduler;
-    @Autowired private MasterRpcServer masterRpcServer;
+    @Autowired private SchedulerRpcServer schedulerRpcServer;
     @Autowired private QuartzScheduler quartzScheduler;
     @Autowired private ZkLeaderElectionAgent zkLeaderElectionAgent;
     @Autowired private ZkWorkerListener zkWorkerListener;
     @Autowired private ZkLostTaskListener zkLostTaskListener;
     @Autowired private RetryScheduler retryScheduler;
 
-    private List<Service> services = new ArrayList<>();
-
     public static void main(String[] args) {
         ConfigurableApplicationContext context =
                 SpringApplication.run(SchedulerLauncher.class, args);
-        SchedulerLauncher lau = context.getBean(SchedulerLauncher.class);
-        lau.start();
 
-        try {
-            isStop.await();
-        } catch (InterruptedException e) {
-            log.error("Master is stop latch await was terminated", e);
-        }
+        SchedulerLauncher app = context.getBean(SchedulerLauncher.class);
+        app.register();
+        app.start();
 
         System.exit(SpringApplication.exit(context, () -> 0));
     }
 
-    public void start() {
-        zkLeaderElectionAgent.register(this);
-        Arrays.asList(
-                        zkLeaderElectionAgent,
-                        masterRpcServer,
-                        zkLostTaskListener,
-                        zkWorkerListener,
-                        jobStateStore,
-                        taskDispatcher,
-                        dependencyScheduler,
-                        retryScheduler,
-                        quartzScheduler)
-                .forEach(
-                        service -> {
-                            services.add(service);
-                            try {
-                                service.start();
-                            } catch (Exception e) {
-                                log.error("Master start fail", e);
-                                stop();
-                            }
-                        });
-        getRuntime().addShutdownHook(new Thread(() -> stop()));
+    public void register() {
+        registerAll(zkLeaderElectionAgent,
+                schedulerRpcServer,
+                zkLostTaskListener,
+                zkWorkerListener,
+                jobStateStore,
+                taskDispatcher,
+                dependencyScheduler,
+                retryScheduler,
+                quartzScheduler);
     }
 
     @Override
     public void electedLeader() {
-        log.info("Elected as a master");
+        log.info("Elected as a leader");
     }
 
     @Override
     public void revokedLeadership() {
         stop();
-    }
-
-    public void stop() {
-        reverse(services)
-                .forEach(
-                        service -> {
-                            try {
-                                service.stop();
-                            } catch (Exception e) {
-                                log.error("Master stop fail", e);
-                            }
-                        });
-
-        isStop.countDown();
     }
 }

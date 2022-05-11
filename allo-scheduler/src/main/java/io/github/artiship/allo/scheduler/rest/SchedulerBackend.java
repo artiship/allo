@@ -157,7 +157,7 @@ public class SchedulerBackend {
                             TaskBo submit =
                                     dependencyScheduler.submit(
                                             task.toRenewTask()
-                                                    .setOssPath(job.getOssPath())
+                                                    .setJobStoragePath(job.getJobStoragePath())
                                                     .setWorkerGroups(job.getWorkerGroups())
                                                     .setRetryTimes(0)
                                                     .setTaskTriggerType(TaskTriggerType.MANUAL_RERUN)

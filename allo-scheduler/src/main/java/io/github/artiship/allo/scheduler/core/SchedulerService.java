@@ -18,6 +18,7 @@
 package io.github.artiship.allo.scheduler.core;
 
 import io.github.artiship.allo.model.bo.TaskBo;
+import io.github.artiship.allo.common.Service;
 
 public interface SchedulerService extends Service {
     TaskBo submit(TaskBo task);

@@ -22,4 +22,6 @@ public class GlobalConstants {
     public static final String SCHEDULER_GROUP = "/allo/scheduler";
     public static final String DEAD_WORKER_GROUP = "/allo/dead/workers";
     public static final String LOST_TASK_GROUP = "/allo/lost/tasks";
+    public static final String ZK_PATH_SEPARATOR = "/";
+    public static final String START_SHELL_FILE_NAME = "start.sh";
 }

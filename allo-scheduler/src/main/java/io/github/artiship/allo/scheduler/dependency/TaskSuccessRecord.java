@@ -17,7 +17,7 @@
 
 package io.github.artiship.allo.scheduler.dependency;
 
-import io.github.artiship.allo.model.utils.TimeUtils;
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.quartz.utils.QuartzUtils;
 import io.github.artiship.allo.scheduler.core.TaskDependency;
 import lombok.Data;

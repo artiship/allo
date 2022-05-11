@@ -17,10 +17,10 @@
 
 package io.github.artiship.allo.tra;
 
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.tra.DependencyRange;
 import io.github.artiship.allo.model.tra.DependencyRule;
 import io.github.artiship.allo.model.tra.DependencyRuleType;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

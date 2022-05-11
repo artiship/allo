@@ -15,47 +15,39 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.scheduler.rpc;
+package io.github.artiship.allo.rpc;
 
-import io.github.artiship.allo.scheduler.core.Service;
+import io.github.artiship.allo.common.Service;
+import io.github.artiship.allo.rpc.api.SchedulerServiceGrpc;
 import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static io.grpc.ServerBuilder.forPort;
-
 @Slf4j
-@Component
-public class MasterRpcServer implements Service {
-    @Value("${rpc.port:9090}")
-    private int DEFAULT_PORT = 9090;
-
-    @Autowired
-    private MasterRpcService masterRpcService;
+public abstract class RpcServer implements Service {
     private Server server;
 
     @Override
     public void start() {
         try {
-            server = forPort(DEFAULT_PORT).addService(masterRpcService)
-                                          .build()
-                                          .start();
+            server = ServerBuilder.forPort(getRpcPort()).addService(getRpcService()).build().start();
         } catch (IOException e) {
             log.info("Rpc server start failed", e);
         }
     }
 
+    protected abstract int getRpcPort();
+
+    protected abstract SchedulerServiceGrpc.SchedulerServiceImplBase getRpcService();
+
     @Override
     public void stop() {
         if (server != null) {
             try {
-                server.shutdown()
-                      .awaitTermination(5, TimeUnit.SECONDS);
+                server.shutdown().awaitTermination(5, TimeUnit.SECONDS);
             } catch (Exception e) {
                 log.info("Rpc server stop failed", e);
             }

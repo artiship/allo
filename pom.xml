@@ -36,6 +36,7 @@
         <module>allo-quartz</module>
         <module>allo-storage</module>
         <module>allo-rpc</module>
+        <module>allo-common</module>
     </modules>
 
     <properties>
@@ -55,6 +56,9 @@
         <guava-retrying.version>2.0.0</guava-retrying.version>
         <protobuf-java.version>3.16.1</protobuf-java.version>
         <oshi-core.version>3.6.1</oshi-core.version>
+        <aliyun-sdk-oss.version>3.4.2</aliyun-sdk-oss.version>
+        <zt-exec.version>1.11</zt-exec.version>
+        <zt-process-killer.version>1.10</zt-process-killer.version>
     </properties>
 
     <dependencyManagement>
@@ -65,6 +69,18 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.artiship</groupId>
+                <artifactId>allo-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.artiship</groupId>
+                <artifactId>allo-storage</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -206,6 +222,24 @@
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
                 <version>${oshi-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun-sdk-oss.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>zt-exec</artifactId>
+                <version>${zt-exec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>zt-process-killer</artifactId>
+                <version>${zt-process-killer.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

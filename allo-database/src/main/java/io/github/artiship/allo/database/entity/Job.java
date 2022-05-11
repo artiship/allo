@@ -45,7 +45,7 @@ public class Job implements Persistable {
     private String scheduleCron;
     private Integer isSelfDependent;
     private Integer isSkipRun;
-    private String ossPath;
+    private String jobStoragePath;
     private Integer maxRetryTimes;
     private Long retryInterval;
     private String workerGroups;
@@ -81,7 +81,7 @@ public class Job implements Persistable {
                 .setRetryInterval(getRetryInterval())
                 .setWorkerGroups(getListOfWorkerGroups())
                 .setDescription(getDescription())
-                .setOssPath(getOssPath());
+                .setJobStoragePath(getJobStoragePath());
     }
 
     public Boolean getIsSelfDependentBoolean() {
@@ -113,7 +113,7 @@ public class Job implements Persistable {
         if (schedulerJob.getWorkerGroups() != null) this.workerGroups = schedulerJob.getWorkerGroups();
         if (schedulerJob.getJobState() != null) this.jobState = schedulerJob.getJobState();
         if (schedulerJob.getDescription() != null) this.description = schedulerJob.getDescription();
-        if (schedulerJob.getOssPath() != null) this.ossPath = schedulerJob.getOssPath();
+        if (schedulerJob.getJobStoragePath() != null) this.jobStoragePath = schedulerJob.getJobStoragePath();
         if (schedulerJob.getCreateTime() != null) this.createTime = schedulerJob.getCreateTime();
         if (schedulerJob.getUpdateTime() != null) this.updateTime = schedulerJob.getUpdateTime();
         this.updateTime = now();

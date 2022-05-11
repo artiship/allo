@@ -49,7 +49,7 @@ public class TaskBo implements Comparable<TaskBo> {
     private Long jobId;
     private String taskName;
     private TaskState taskState;
-    private String ossPath;
+    private String jobStoragePath;
     private List<String> workerGroups;
     private String workerHost;
     private Integer workerPort;
@@ -57,7 +57,7 @@ public class TaskBo implements Comparable<TaskBo> {
     private Integer maxRetryTimes;
     private Long retryInterval;
     private Long pid;
-    private List<String> applicationIds;
+    private Set<String> applicationIds;
     private TaskTriggerType taskTriggerType;
     private JobType jobType;
     private Boolean isSelfDependent;
@@ -82,7 +82,7 @@ public class TaskBo implements Comparable<TaskBo> {
         return new TaskBo()
                 .setJobId(job.getId())
                 .setTaskName(job.getJobName())
-                .setOssPath(job.getOssPath())
+                .setJobStoragePath(job.getJobStoragePath())
                 .setWorkerGroups(job.getWorkerGroups())
                 .setMaxRetryTimes(job.getMaxRetryTimes())
                 .setRetryInterval(job.getRetryInterval())
@@ -103,7 +103,7 @@ public class TaskBo implements Comparable<TaskBo> {
         return new TaskBo()
                 .setJobId(this.jobId)
                 .setTaskName(this.taskName)
-                .setOssPath(this.ossPath)
+                .setJobStoragePath(this.jobStoragePath)
                 .setWorkerGroups(this.getWorkerGroups())
                 .setRetryTimes(this.retryTimes == null ? 0 : this.retryTimes)
                 .setRetryInterval(this.retryInterval)
@@ -239,7 +239,7 @@ public class TaskBo implements Comparable<TaskBo> {
     }
 
     public boolean isOssPathValid() {
-        if (this.ossPath == null || this.ossPath.length() == 0 || !ossPath.contains("/")) {
+        if (this.jobStoragePath == null || this.jobStoragePath.length() == 0 || !jobStoragePath.contains("/")) {
             return false;
         }
         return true;
@@ -262,5 +262,17 @@ public class TaskBo implements Comparable<TaskBo> {
             return updateTime.plusMinutes(retryInterval);
         }
         return endTime.plusMinutes(retryInterval);
+    }
+
+    public void addApplicationId(String applicationId) {
+        if (applicationId == null || applicationId.length() == 0) {
+            return;
+        }
+
+        if (this.applicationIds == null) {
+            this.applicationIds = new HashSet<>();
+        }
+
+        this.applicationIds.add(applicationId);
     }
 }

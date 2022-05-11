@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.model.utils;
+package io.github.artiship.allo.common;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

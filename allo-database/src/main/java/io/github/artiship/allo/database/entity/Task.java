@@ -38,7 +38,7 @@ public class Task {
     private Long jobId;
     private String taskName;
     private Integer taskState;
-    private String ossPath;
+    private String jobStoragePath;
     private String workerGroups;
     private String workerHost;
     private Integer workerPort;
@@ -71,7 +71,7 @@ public class Task {
         if (task.getJobId() != null) this.jobId = task.getJobId();
         if (task.getTaskName() != null) this.taskName = task.getTaskName();
         if (task.getTaskState() != null) this.taskState = task.getTaskState();
-        if (task.getOssPath() != null) this.ossPath = task.getOssPath();
+        if (task.getJobStoragePath() != null) this.jobStoragePath = task.getJobStoragePath();
         if (task.getWorkerGroups() != null) this.workerGroups = task.getWorkerGroups();
         if (task.getWorkerHost() != null) this.workerHost = task.getWorkerHost();
         if (task.getWorkerPort() != null) this.workerPort = task.getWorkerPort();

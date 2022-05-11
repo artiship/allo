@@ -19,9 +19,9 @@ package io.github.artiship.allo.scheduler.ha;
 
 import io.github.artiship.allo.model.exception.TaskNotFoundException;
 import io.github.artiship.allo.model.ha.ZkLostTask;
-import io.github.artiship.allo.scheduler.core.Service;
+import io.github.artiship.allo.common.Service;
 import io.github.artiship.allo.scheduler.rest.SchedulerBackend;
-import io.github.com.artiship.ha.CuratorUtils;
+import io.github.com.artiship.ha.utils.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;

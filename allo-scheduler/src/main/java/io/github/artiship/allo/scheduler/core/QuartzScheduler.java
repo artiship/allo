@@ -18,6 +18,7 @@
 package io.github.artiship.allo.scheduler.core;
 
 import io.github.artiship.allo.quartz.QuartzSchedulerService;
+import io.github.artiship.allo.common.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

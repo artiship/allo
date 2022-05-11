@@ -17,7 +17,7 @@
 
 package io.github.artiship.allo.tra;
 
-import io.github.artiship.allo.model.utils.TimeUtils;
+import io.github.artiship.allo.common.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

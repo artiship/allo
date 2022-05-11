@@ -39,7 +39,7 @@ public class JobBo {
     private String scheduleCron;
     private Boolean isSelfDependent;
     private Boolean isSkipRun;
-    private String ossPath;
+    private String jobStoragePath;
     private Integer maxRetryTimes;
     private Long retryInterval;
     private List<String> workerGroups;

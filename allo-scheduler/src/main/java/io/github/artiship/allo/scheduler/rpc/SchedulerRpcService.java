@@ -25,19 +25,18 @@ import io.github.artiship.allo.rpc.api.RpcResponse;
 import io.github.artiship.allo.rpc.api.RpcTask;
 import io.github.artiship.allo.rpc.api.SchedulerServiceGrpc;
 import io.github.artiship.allo.scheduler.core.*;
+import io.github.com.artiship.ha.TaskStateListener;
+import io.github.com.artiship.ha.TaskStateNotifier;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import static io.github.artiship.allo.model.enums.TaskState.finishStates;
 
 @Slf4j
 @Service
-public class MasterRpcService extends SchedulerServiceGrpc.SchedulerServiceImplBase {
+public class SchedulerRpcService extends SchedulerServiceGrpc.SchedulerServiceImplBase {
 
     @Autowired
     private ResourceManager resourceManager;
@@ -50,7 +49,7 @@ public class MasterRpcService extends SchedulerServiceGrpc.SchedulerServiceImplB
     @Autowired
     private TaskOperationCache taskOperationCache;
 
-    private final List<TaskStateListener> listeners = new LinkedList<>();
+    private TaskStateNotifier taskStateNotifier = new TaskStateNotifier();
 
     @Override
     public void heartbeat(RpcHeartbeat heartbeat, StreamObserver<RpcResponse> responseStreamObserver) {
@@ -82,25 +81,25 @@ public class MasterRpcService extends SchedulerServiceGrpc.SchedulerServiceImplB
 
             switch (task.getTaskState()) {
                 case RUNNING:
-                    notifyRunning(task);
+                    taskStateNotifier.notifyRunning(task);
                     break;
                 case SUCCESS:
-                    notifySuccess(task);
+                    taskStateNotifier.notifySuccess(task);
                     break;
                 case FAIL:
-                    notifyFail(task);
+                    taskStateNotifier.notifyFail(task);
                     break;
                 case KILLED:
                     if (taskOperationCache.applied(task, TaskOperation.MARK_SUCCESS)) {
-                        notifySuccess(task);
+                        taskStateNotifier.notifySuccess(task);
                     } else if (taskOperationCache.applied(task, TaskOperation.MARK_FAIL)) {
-                        notifyFail(task);
+                        taskStateNotifier.notifyFail(task);
                     } else {
-                        notifyKilled(task);
+                        taskStateNotifier.notifyKilled(task);
                     }
                     break;
                 case FAIL_OVER:
-                    notifyFailOver(task);
+                    taskStateNotifier.notifyFailOver(task);
                 default:
                     log.warn("{} state {} is not handled", task.traceId(), task.getTaskState());
                     break;
@@ -114,38 +113,6 @@ public class MasterRpcService extends SchedulerServiceGrpc.SchedulerServiceImplB
     }
 
     public void registerListener(TaskStateListener listener) {
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
-    }
-
-    private void notifyRunning(TaskBo task) {
-        synchronized (listeners) {
-            listeners.forEach(l -> l.onRunning(task));
-        }
-    }
-
-    private void notifyKilled(TaskBo task) {
-        synchronized (listeners) {
-            listeners.forEach(l -> l.onKilled(task));
-        }
-    }
-
-    private void notifySuccess(TaskBo task) {
-        synchronized (listeners) {
-            listeners.forEach(l -> l.onSuccess(task));
-        }
-    }
-
-    private void notifyFail(TaskBo task) {
-        synchronized (listeners) {
-            listeners.forEach(l -> l.onFail(task));
-        }
-    }
-
-    private void notifyFailOver(TaskBo task) {
-        synchronized (listeners) {
-            listeners.forEach(l -> l.onFailOver(task));
-        }
+        taskStateNotifier.registerListener(listener);
     }
 }

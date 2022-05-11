@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.scheduler.core;
+package io.github.artiship.allo.worker.rpc;
 
-import io.github.artiship.allo.model.bo.TaskBo;
+import io.github.artiship.allo.rpc.RpcServer;
+import io.github.artiship.allo.rpc.api.SchedulerServiceGrpc;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-public class TaskStateListenerAdaptor implements TaskStateListener {
+@Slf4j
+@Component
+public class WorkerRpcServer extends RpcServer {
+    @Autowired private WorkerRpcService workerRpcService;
+
+    @Value("${rpc.port:9090}")
+    private int rpcPort;
+
     @Override
-    public void onRunning(TaskBo task) {
-
+    protected int getRpcPort() {
+        return rpcPort;
     }
 
     @Override
-    public void onKilled(TaskBo task) {
-
-    }
-
-    @Override
-    public void onSuccess(TaskBo task) {
-
-    }
-
-    @Override
-    public void onFail(TaskBo task) {
-
-    }
-
-    @Override
-    public void onFailOver(TaskBo task) {
-
+    protected SchedulerServiceGrpc.SchedulerServiceImplBase getRpcService() {
+        return workerRpcService;
     }
 }

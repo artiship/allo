@@ -17,10 +17,10 @@
 
 package io.github.artiship.allo.quartz;
 
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.bo.JobBo;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.model.enums.TaskTriggerType;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobDetail;

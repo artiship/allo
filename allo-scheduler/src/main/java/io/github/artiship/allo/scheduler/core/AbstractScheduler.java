@@ -18,6 +18,7 @@
 package io.github.artiship.allo.scheduler.core;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.github.com.artiship.ha.TaskStateListenerAdaptor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ThreadFactory;

@@ -17,8 +17,8 @@
 
 package io.github.artiship.allo.tra;
 
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.tra.DependencyRange;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import io.github.artiship.allo.quartz.utils.QuartzUtils;
 
 import java.time.LocalDateTime;

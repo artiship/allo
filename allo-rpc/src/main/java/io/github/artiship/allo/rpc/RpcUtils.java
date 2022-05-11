@@ -21,17 +21,17 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.ProtocolStringList;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.util.Timestamps;
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.model.bo.WorkerBo;
 import io.github.artiship.allo.model.enums.JobType;
 import io.github.artiship.allo.model.enums.TaskState;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import io.github.artiship.allo.rpc.api.RpcHeartbeat;
 import io.github.artiship.allo.rpc.api.RpcTask;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.github.artiship.allo.rpc.api.RpcTask.newBuilder;
@@ -58,7 +58,7 @@ public class RpcUtils {
         if (taskBo.getTaskState() != null) builder.setState(taskBo.getTaskState().getCode());
         if (taskBo.getWorkerPort() != null) builder.setWorkerPort(taskBo.getWorkerPort());
         if (taskBo.getJobType() != null) builder.setJobType(taskBo.getJobType().getCode());
-        if (taskBo.getOssPath() != null) builder.setOssPath(taskBo.getOssPath());
+        if (taskBo.getJobStoragePath() != null) builder.setOssPath(taskBo.getJobStoragePath());
         return builder.build();
     }
 
@@ -68,7 +68,7 @@ public class RpcUtils {
         return new TaskBo().setId(task.getId())
                 .setJobId(task.getJobId())
                 .setTaskState(TaskState.of(task.getState()))
-                .setOssPath(task.getOssPath())
+                .setJobStoragePath(task.getOssPath())
                 .setWorkerHost(task.getWorkerHost())
                 .setWorkerPort(task.getWorkerPort())
                 .setJobType(JobType.of(task.getJobType()))
@@ -97,12 +97,12 @@ public class RpcUtils {
         return TimeUtils.fromDate(new Date(timestamp.getSeconds() * MILLIS_PER_SECOND));
     }
 
-    private static List<String> toApplicationList(ProtocolStringList list) {
+    private static Set<String> toApplicationList(ProtocolStringList list) {
         return list == null ? null : list.stream()
                 .filter(i -> i != null && i.trim()
                         .length() > 0)
                 .map(i -> i.trim())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public static WorkerBo toWorkerBo(RpcHeartbeat heartbeat) {

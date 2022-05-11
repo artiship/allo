@@ -32,7 +32,7 @@ import io.github.artiship.allo.model.bo.WorkerBo;
 import io.github.artiship.allo.model.enums.TaskState;
 import io.github.artiship.allo.model.exception.JobNotFoundException;
 import io.github.artiship.allo.model.exception.TaskNotFoundException;
-import io.github.artiship.allo.model.utils.TimeUtils;
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.scheduler.dependency.TaskSuccessRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

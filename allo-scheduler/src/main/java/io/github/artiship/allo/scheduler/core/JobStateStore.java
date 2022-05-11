@@ -19,17 +19,19 @@ package io.github.artiship.allo.scheduler.core;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import io.github.com.artiship.ha.TaskStateListenerAdaptor;
 import io.github.artiship.allo.database.entity.JobRelation;
 import io.github.artiship.allo.model.bo.JobBo;
 import io.github.artiship.allo.model.bo.TaskBo;
-import io.github.artiship.allo.model.utils.TimeUtils;
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.quartz.utils.QuartzUtils;
 import io.github.artiship.allo.scheduler.collections.LimitedSortedByValueMap;
 import io.github.artiship.allo.scheduler.collections.LimitedSortedSet;
 import io.github.artiship.allo.scheduler.dependency.TaskFailedRecord;
 import io.github.artiship.allo.scheduler.dependency.TaskSuccessRecord;
-import io.github.artiship.allo.scheduler.rpc.MasterRpcService;
+import io.github.artiship.allo.scheduler.rpc.SchedulerRpcService;
 import io.github.artiship.allo.tra.DefaultDependencyAnalyzer;
+import io.github.artiship.allo.common.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,11 +72,11 @@ public class JobStateStore extends TaskStateListenerAdaptor implements Service {
 
     @Autowired private SchedulerDao schedulerDao;
 
-    @Autowired private MasterRpcService masterRpcService;
+    @Autowired private SchedulerRpcService schedulerRpcService;
 
     @Override
     public void start() {
-        this.masterRpcService.registerListener(this);
+        this.schedulerRpcService.registerListener(this);
 
         jobDependencies.clear();
         jobFailedWorkers.clear();

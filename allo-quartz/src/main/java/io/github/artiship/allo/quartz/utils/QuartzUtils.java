@@ -17,8 +17,8 @@
 
 package io.github.artiship.allo.quartz.utils;
 
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.enums.JobCycle;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronExpression;
 import org.quartz.TriggerUtils;

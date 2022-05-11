@@ -17,8 +17,8 @@
 
 package io.github.artiship.allo.tra;
 
+import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.enums.JobCycle;
-import io.github.artiship.allo.model.utils.TimeUtils;
 import io.github.artiship.allo.quartz.utils.QuartzUtils;
 import io.github.artiship.allo.tra.exception.CronNotSatisfiedException;
 import lombok.Getter;
@@ -29,7 +29,10 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;

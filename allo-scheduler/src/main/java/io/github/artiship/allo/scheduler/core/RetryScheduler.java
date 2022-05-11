@@ -18,7 +18,7 @@
 package io.github.artiship.allo.scheduler.core;
 
 import io.github.artiship.allo.model.bo.TaskBo;
-import io.github.artiship.allo.scheduler.rpc.MasterRpcService;
+import io.github.artiship.allo.scheduler.rpc.SchedulerRpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class RetryScheduler extends AbstractScheduler {
     @Resource
     private TaskDispatcher taskDispatcher;
     @Autowired
-    private MasterRpcService masterRpcService;
+    private SchedulerRpcService schedulerRpcService;
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
@@ -68,7 +68,7 @@ public class RetryScheduler extends AbstractScheduler {
 
     @Override
     public void start() throws Exception {
-        masterRpcService.registerListener(this);
+        schedulerRpcService.registerListener(this);
         log.info("RetryScheduler restore start...");
         this.schedulerDao.getTasksByState(RETRYING)
                          .forEach(t -> {

@@ -25,7 +25,7 @@ import io.github.artiship.allo.model.exception.TaskNotFoundException;
 import io.github.artiship.allo.rpc.RpcClient;
 import io.github.artiship.allo.rpc.RpcUtils;
 import io.github.artiship.allo.rpc.api.RpcTask;
-import io.github.artiship.allo.scheduler.rpc.MasterRpcService;
+import io.github.artiship.allo.scheduler.rpc.SchedulerRpcService;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class TaskDispatcher extends AbstractScheduler {
     @Autowired private ResourceManager resourceManager;
     @Autowired private JobStateStore jobStateStore;
     @Autowired private SchedulerDao schedulerDao;
-    @Autowired private MasterRpcService masterRpcService;
+    @Autowired private SchedulerRpcService schedulerRpcService;
     @Autowired private TaskOperationCache taskOperationCache;
 
     @Value("${services.task-dispatcher.thread.count:1}")
@@ -94,7 +94,7 @@ public class TaskDispatcher extends AbstractScheduler {
 
     @Override
     public void start() {
-        masterRpcService.registerListener(this);
+        schedulerRpcService.registerListener(this);
         this.threadPool =
                 new ThreadPoolExecutor(
                         threadCount,

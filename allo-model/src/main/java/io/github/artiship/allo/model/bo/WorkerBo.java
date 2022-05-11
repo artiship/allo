@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.google.common.base.Joiner.on;
-import static io.github.artiship.allo.model.GlobalConstants.DEAD_WORKER_GROUP;
 
 @Data
 @Accessors(chain = true)
@@ -81,10 +80,6 @@ public class WorkerBo {
 
     public String getIpAndPortStr() {
         return this.getHost() + ":" + this.getPort();
-    }
-
-    public String getDeadWorkerPath() {
-        return DEAD_WORKER_GROUP + "/" + this.getIpAndPortStr();
     }
 
     public boolean isActive() {

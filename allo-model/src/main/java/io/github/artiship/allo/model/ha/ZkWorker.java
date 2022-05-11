@@ -17,10 +17,12 @@
 
 package io.github.artiship.allo.model.ha;
 
+import com.google.gson.Gson;
 import lombok.Data;
 
 import java.util.List;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static com.google.common.base.Splitter.on;
 import static java.lang.Integer.valueOf;
 import static java.util.Objects.requireNonNull;
@@ -29,6 +31,8 @@ import static java.util.Objects.requireNonNull;
 public class ZkWorker {
     private final String ip;
     private final Integer port;
+
+    private static Gson gson = new Gson();
 
     public static ZkWorker from(String nodeInfoStr) {
         List<String> list = on(":").splitToList(nodeInfoStr);
@@ -41,6 +45,10 @@ public class ZkWorker {
 
         this.ip = ip;
         this.port = port;
+    }
+
+    public static ZkWorker from(byte[] bytes) {
+        return from(new String(bytes, UTF_8));
     }
 
     @Override

@@ -15,18 +15,9 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.scheduler.core;
+package io.github.artiship.allo.common;
 
-import io.github.artiship.allo.model.bo.TaskBo;
-
-public interface TaskStateListener {
-    void onRunning(TaskBo task);
-
-    void onKilled(TaskBo task);
-
-    void onSuccess(TaskBo task);
-
-    void onFail(TaskBo task);
-
-    void onFailOver(TaskBo task);
+public interface Service {
+    void start() throws Exception;
+    void stop() throws Exception;
 }
