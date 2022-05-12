@@ -257,14 +257,13 @@ public class TaskDispatcher extends AbstractScheduler {
                     workerRpcClient.submitTask(rpcTask);
 
                     log.info(
-                            "Task_{}_{} DISPATCH to {}: priority={}, penalty={}, schedule_time={}, cal_time{}",
+                            "Task_{}_{} DISPATCH to {}: priority={}, penalty={}, schedule_time={}",
                             task.getJobId(),
                             task.getId(),
                             worker.getHost(),
                             task.getJobPriority(),
                             task.getPenalty(),
-                            task.getScheduleTime(),
-                            RpcUtils.toLocalDateTime(rpcTask.getCalculationTime()));
+                            task.getScheduleTime());
                 } catch (StatusRuntimeException e) {
                     resourceManager.unHealthyWorker(worker.getHost());
                     log.warn("Worker_{} can't reach, add to un healthy check", worker.getHost(), e);

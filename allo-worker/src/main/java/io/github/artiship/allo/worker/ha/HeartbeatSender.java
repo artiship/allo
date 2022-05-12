@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.worker;
+package io.github.artiship.allo.worker.ha;
 
 import io.github.artiship.allo.common.Service;
 import io.github.artiship.allo.model.ha.ZkScheduler;

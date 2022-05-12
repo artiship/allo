@@ -18,7 +18,9 @@
 package io.github.artiship.allo.worker;
 
 import io.github.artiship.allo.common.Service;
-import io.github.artiship.allo.worker.rpc.WorkerRpcServer;
+import io.github.artiship.allo.worker.api.rpc.WorkerRpcServer;
+import io.github.artiship.allo.worker.ha.HeartbeatSender;
+import io.github.artiship.allo.worker.ha.SuicideReactor;
 import io.github.com.artiship.ha.ServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

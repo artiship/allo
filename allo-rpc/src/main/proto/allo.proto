@@ -18,9 +18,10 @@ message RpcTask {
     int32 retryTimes = 10;
     int64 pid = 11;
     repeated string applicationId = 12;
-    google.protobuf.Timestamp scheduleTime = 13;
-    google.protobuf.Timestamp startTime = 14;
-    google.protobuf.Timestamp endTime = 15;
+    int32 executionMode = 13;
+    google.protobuf.Timestamp scheduleTime = 14;
+    google.protobuf.Timestamp startTime = 15;
+    google.protobuf.Timestamp endTime = 16;
 }
 
 message RpcHeartbeat {

@@ -51,6 +51,7 @@ public class Task {
     private Integer jobType;
     private Integer isSelfDependent;
     private Integer jobPriority;
+    private Integer executionMode;
     private String scheduleCron;
     private LocalDateTime scheduleTime; //quartz fire time, includes missing fire time
     private LocalDateTime pendingTime; //time of submit to task scheduler
@@ -85,6 +86,7 @@ public class Task {
         if (task.getJobType() != null) this.jobType = task.getJobType();
         if (task.getIsSelfDependent() != null) this.isSelfDependent = task.getIsSelfDependent();
         if (task.getJobPriority() != null) this.jobPriority = task.getJobPriority();
+        if (task.getExecutionMode() != null) this.executionMode = task.getExecutionMode();
         if (task.getScheduleCron() != null) this.scheduleCron = task.getScheduleCron();
         if (task.getScheduleTime() != null) this.scheduleTime = task.getScheduleTime();
         if (task.getPendingTime() != null) this.pendingTime = task.getPendingTime();

@@ -17,10 +17,7 @@
 
 package io.github.artiship.allo.model.bo;
 
-import io.github.artiship.allo.model.enums.JobCycle;
-import io.github.artiship.allo.model.enums.JobPriority;
-import io.github.artiship.allo.model.enums.JobState;
-import io.github.artiship.allo.model.enums.JobType;
+import io.github.artiship.allo.model.enums.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -45,7 +42,7 @@ public class JobBo {
     private List<String> workerGroups;
     private String description;
     private JobState jobState;
-
+    private ExecutionMode executionMode;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.github.artiship.allo.worker.rpc;
+package io.github.artiship.allo.worker.api.rpc;
 
 import io.github.artiship.allo.rpc.RpcServer;
 import io.github.artiship.allo.rpc.api.SchedulerServiceGrpc;

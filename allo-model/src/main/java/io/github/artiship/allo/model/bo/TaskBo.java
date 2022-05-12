@@ -18,10 +18,7 @@
 package io.github.artiship.allo.model.bo;
 
 import com.google.gson.Gson;
-import io.github.artiship.allo.model.enums.JobPriority;
-import io.github.artiship.allo.model.enums.JobType;
-import io.github.artiship.allo.model.enums.TaskState;
-import io.github.artiship.allo.model.enums.TaskTriggerType;
+import io.github.artiship.allo.model.enums.*;
 import io.github.artiship.allo.model.ha.ZkLostTask;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -63,6 +60,7 @@ public class TaskBo implements Comparable<TaskBo> {
     private Boolean isSelfDependent;
     private Boolean isSkipRun;
     private JobPriority jobPriority;
+    private ExecutionMode executionMode;
     private String scheduleCron;
     private LocalDateTime scheduleTime; // quartz fire time, includes missing fire time
     private LocalDateTime pendingTime; // time of submit to task scheduler
@@ -88,6 +86,7 @@ public class TaskBo implements Comparable<TaskBo> {
                 .setRetryInterval(job.getRetryInterval())
                 .setJobPriority(job.getJobPriority() != null ? job.getJobPriority() : MEDIUM)
                 .setJobType(job.getJobType())
+                .setExecutionMode(job.getExecutionMode())
                 .setIsSelfDependent(job.getIsSelfDependent())
                 .setScheduleCron(job.getScheduleCron());
     }
@@ -115,6 +114,7 @@ public class TaskBo implements Comparable<TaskBo> {
                 .setScheduleCron(this.scheduleCron)
                 .setScheduleTime(this.scheduleTime)
                 .setTaskDependenciesJson(this.taskDependenciesJson)
+                .setExecutionMode(this.executionMode)
                 .setTaskTriggerType(this.taskTriggerType);
     }
 

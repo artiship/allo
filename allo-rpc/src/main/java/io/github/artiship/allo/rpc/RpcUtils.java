@@ -24,6 +24,7 @@ import com.google.protobuf.util.Timestamps;
 import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.model.bo.WorkerBo;
+import io.github.artiship.allo.model.enums.ExecutionMode;
 import io.github.artiship.allo.model.enums.JobType;
 import io.github.artiship.allo.model.enums.TaskState;
 import io.github.artiship.allo.rpc.api.RpcHeartbeat;
@@ -48,7 +49,8 @@ public class RpcUtils {
         if (taskBo.getScheduleTime() != null) {
             builder.setScheduleTime(toProtoTimestamp(taskBo.getScheduleTime()));
         }
-        if (taskBo.getStartTime() != null) builder.setStartTime(toProtoTimestamp(taskBo.getStartTime()));
+        if (taskBo.getStartTime() != null)
+            builder.setStartTime(toProtoTimestamp(taskBo.getStartTime()));
         if (taskBo.getApplicationIds() != null) {
             taskBo.getApplicationIds().forEach(appId -> builder.addApplicationId(appId));
         }
@@ -59,13 +61,19 @@ public class RpcUtils {
         if (taskBo.getWorkerPort() != null) builder.setWorkerPort(taskBo.getWorkerPort());
         if (taskBo.getJobType() != null) builder.setJobType(taskBo.getJobType().getCode());
         if (taskBo.getJobStoragePath() != null) builder.setOssPath(taskBo.getJobStoragePath());
+        if (taskBo.getExecutionMode() != null)
+            builder.setExecutionMode(
+                    taskBo.getExecutionMode() == null ? null : taskBo.getExecutionMode().getCode());
         return builder.build();
     }
 
     public static TaskBo toTaskBo(RpcTask task) {
-        LocalDateTime startTime = task.getStartTime() == null ? null : toLocalDateTime(task.getStartTime());
-        LocalDateTime endTime = task.getEndTime() == null ? null : toLocalDateTime(task.getEndTime());
-        return new TaskBo().setId(task.getId())
+        LocalDateTime startTime =
+                task.getStartTime() == null ? null : toLocalDateTime(task.getStartTime());
+        LocalDateTime endTime =
+                task.getEndTime() == null ? null : toLocalDateTime(task.getEndTime());
+        return new TaskBo()
+                .setId(task.getId())
                 .setJobId(task.getJobId())
                 .setTaskState(TaskState.of(task.getState()))
                 .setJobStoragePath(task.getOssPath())
@@ -77,14 +85,14 @@ public class RpcUtils {
                 .setRetryTimes(task.getRetryTimes())
                 .setPid(task.getPid())
                 .setApplicationIds(toApplicationList(task.getApplicationIdList()))
+                .setExecutionMode(ExecutionMode.of(task.getExecutionMode()))
                 .setScheduleTime(toLocalDateTime(task.getScheduleTime()))
                 .setStartTime(startTime.getYear() == 1970 ? null : startTime)
                 .setEndTime(endTime.getYear() == 1970 ? null : endTime);
     }
 
     public static Timestamp toProtoTimestamp(LocalDateTime localDateTime) {
-        if (localDateTime == null)
-            return null;
+        if (localDateTime == null) return null;
 
         return toProtoTimestamp(Date.from(TimeUtils.instant(localDateTime)));
     }
@@ -98,18 +106,22 @@ public class RpcUtils {
     }
 
     private static Set<String> toApplicationList(ProtocolStringList list) {
-        return list == null ? null : list.stream()
-                .filter(i -> i != null && i.trim()
-                        .length() > 0)
-                .map(i -> i.trim())
-                .collect(Collectors.toSet());
+        return list == null
+                ? null
+                : list.stream()
+                        .filter(i -> i != null && i.trim().length() > 0)
+                        .map(i -> i.trim())
+                        .collect(Collectors.toSet());
     }
 
     public static WorkerBo toWorkerBo(RpcHeartbeat heartbeat) {
-        return new WorkerBo().setPort(heartbeat.getPort())
+        return new WorkerBo()
+                .setPort(heartbeat.getPort())
                 .setHost(heartbeat.getHost())
-                .setWorkerGroups(heartbeat.getWorkerGroupsList() == null ? null
-                        : Lists.newArrayList(heartbeat.getWorkerGroupsList()))
+                .setWorkerGroups(
+                        heartbeat.getWorkerGroupsList() == null
+                                ? null
+                                : Lists.newArrayList(heartbeat.getWorkerGroupsList()))
                 .setMaxTasks(heartbeat.getMaxTask())
                 .setMemoryUsage(heartbeat.getMemoryUsage())
                 .setCpuUsage(heartbeat.getCpuUsage())

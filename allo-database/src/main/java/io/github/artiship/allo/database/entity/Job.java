@@ -18,6 +18,7 @@
 package io.github.artiship.allo.database.entity;
 
 import io.github.artiship.allo.model.bo.JobBo;
+import io.github.artiship.allo.model.enums.ExecutionMode;
 import io.github.artiship.allo.model.enums.JobPriority;
 import io.github.artiship.allo.model.enums.JobType;
 import lombok.Data;
@@ -51,7 +52,7 @@ public class Job implements Persistable {
     private String workerGroups;
     private String description;
     private Integer jobState;
-
+    private Integer executionMode;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
@@ -81,6 +82,7 @@ public class Job implements Persistable {
                 .setRetryInterval(getRetryInterval())
                 .setWorkerGroups(getListOfWorkerGroups())
                 .setDescription(getDescription())
+                .setExecutionMode(ExecutionMode.of(getExecutionMode()))
                 .setJobStoragePath(getJobStoragePath());
     }
 
@@ -112,6 +114,7 @@ public class Job implements Persistable {
         if (schedulerJob.getRetryInterval() != null) this.retryInterval = schedulerJob.getRetryInterval();
         if (schedulerJob.getWorkerGroups() != null) this.workerGroups = schedulerJob.getWorkerGroups();
         if (schedulerJob.getJobState() != null) this.jobState = schedulerJob.getJobState();
+        if (schedulerJob.getExecutionMode() != null) this.executionMode = schedulerJob.getExecutionMode();
         if (schedulerJob.getDescription() != null) this.description = schedulerJob.getDescription();
         if (schedulerJob.getJobStoragePath() != null) this.jobStoragePath = schedulerJob.getJobStoragePath();
         if (schedulerJob.getCreateTime() != null) this.createTime = schedulerJob.getCreateTime();
