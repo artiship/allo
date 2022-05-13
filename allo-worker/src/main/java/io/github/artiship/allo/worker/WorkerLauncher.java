@@ -18,9 +18,10 @@
 package io.github.artiship.allo.worker;
 
 import io.github.artiship.allo.common.Service;
+import io.github.artiship.allo.worker.api.WorkerBackend;
 import io.github.artiship.allo.worker.api.rpc.WorkerRpcServer;
 import io.github.artiship.allo.worker.ha.HeartbeatSender;
-import io.github.artiship.allo.worker.ha.SuicideReactor;
+import io.github.artiship.allo.worker.ha.DeadWorkerListener;
 import io.github.com.artiship.ha.ServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,9 @@ import java.util.concurrent.CountDownLatch;
 @SpringBootApplication
 public class WorkerLauncher extends ServiceManager {
     @Autowired private HeartbeatSender heartbeatSender;
-    @Autowired private SuicideReactor suicideReactor;
+    @Autowired private DeadWorkerListener deadWorkerListener;
     @Autowired private WorkerRpcServer workerRpcServer;
+    @Autowired private WorkerBackend workerBackend;
 
     private static CountDownLatch isStop = new CountDownLatch(1);
     private List<Service> services = new ArrayList<>();
@@ -47,11 +49,12 @@ public class WorkerLauncher extends ServiceManager {
         WorkerLauncher app = context.getBean(WorkerLauncher.class);
         app.register();
         app.start();
+        app.blockUntilShutdown();
 
         System.exit(SpringApplication.exit(context, () -> 0));
     }
 
     private void register() {
-        registerAll(heartbeatSender, suicideReactor, workerRpcServer);
+        registerAll(workerBackend, heartbeatSender, workerRpcServer, deadWorkerListener);
     }
 }

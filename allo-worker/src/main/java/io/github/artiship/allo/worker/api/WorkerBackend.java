@@ -81,12 +81,13 @@ public class WorkerBackend implements Service, TaskStateListener {
         return null;
     }
 
-    public void failOver() {
-        executors.entrySet().stream().forEach(entry -> {
-            failOverTasks.add(entry.getKey());
-            AlloExecutor executor = entry.getValue();
-            executor.kill();
-        });
+    public void killAllTasks() {
+        executors.entrySet().stream()
+                .forEach(
+                        entry -> {
+                            AlloExecutor executor = entry.getValue();
+                            executor.kill();
+                        });
     }
 
     @Override

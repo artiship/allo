@@ -50,11 +50,9 @@ public abstract class ServiceManager {
                     }
                 });
         getRuntime().addShutdownHook(new Thread(() -> stop()));
-
-        blockUntilShutdown();
     }
 
-    private void blockUntilShutdown() {
+    public void blockUntilShutdown() {
         try {
             isStop.await();
         } catch (InterruptedException e) {
@@ -62,7 +60,7 @@ public abstract class ServiceManager {
         }
     }
 
-    protected void stop() {
+    public void stop() {
         reverse(services)
                 .forEach(
                         service -> {

@@ -54,6 +54,7 @@ public class SchedulerLauncher extends ServiceManager implements LeaderElectable
         SchedulerLauncher app = context.getBean(SchedulerLauncher.class);
         app.register();
         app.start();
+        app.blockUntilShutdown();
 
         System.exit(SpringApplication.exit(context, () -> 0));
     }
