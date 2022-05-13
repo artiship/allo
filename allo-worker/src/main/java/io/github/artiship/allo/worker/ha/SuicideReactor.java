@@ -21,6 +21,7 @@ import io.github.artiship.allo.common.Service;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.model.ha.ZkWorker;
 import io.github.artiship.allo.rpc.OsUtils;
+import io.github.artiship.allo.worker.api.WorkerBackend;
 import io.github.artiship.allo.worker.common.CommonCache;
 import io.github.com.artiship.ha.utils.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -40,6 +42,9 @@ import static io.github.com.artiship.ha.GlobalConstants.LOST_TASK_GROUP;
 public class SuicideReactor implements PathChildrenCacheListener, Service {
     @Resource
     private CuratorFramework zkClient;
+    @Autowired
+    private WorkerBackend workerBackend;
+
     private PathChildrenCache deadWorkers;
 
     @Override
@@ -74,14 +79,12 @@ public class SuicideReactor implements PathChildrenCacheListener, Service {
             runningTasks.forEach((task) -> {
                 log.info("Need to kill task [{}]", task);
                 try {
-                    //TODO kill
-//                    CommonUtils.killTask(zkClientHolder, rpcClientHolder, task, taskState);
+                    workerBackend.failOver();
                 } catch (Exception e) {
                     log.error(String.format("Task_%s_%s, kill task failed.", task.getJobId(), task.getId()), e);
                 }
             });
         }
-        //remove from zk
         CuratorUtils.unRegisterWorker(zkClient, worker);
     }
 

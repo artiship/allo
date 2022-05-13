@@ -1,6 +1,6 @@
 package io.github.artiship.allo.worker.executor;
 
-public interface Executor {
+public interface AlloExecutor {
     void execute();
     void kill();
 }

@@ -19,13 +19,23 @@ package io.github.artiship.allo.worker.api;
 
 import io.github.artiship.allo.common.Service;
 import io.github.artiship.allo.model.bo.TaskBo;
+import io.github.artiship.allo.model.enums.TaskState;
+import io.github.artiship.allo.model.ha.ZkScheduler;
+import io.github.artiship.allo.rpc.RpcClient;
+import io.github.artiship.allo.rpc.RpcUtils;
 import io.github.artiship.allo.storage.SharedStorage;
-import io.github.artiship.allo.worker.executor.LocalExecutor;
+import io.github.artiship.allo.worker.executor.AlloExecutor;
+import io.github.artiship.allo.worker.executor.LocalAlloExecutor;
+import io.github.com.artiship.ha.SchedulerLeaderRetrieval;
 import io.github.com.artiship.ha.TaskStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,12 +43,16 @@ import java.util.concurrent.Future;
 @Component
 public class WorkerBackend implements Service, TaskStateListener {
     @Autowired private SharedStorage sharedStorage;
+    @Autowired private SchedulerLeaderRetrieval schedulerLeaderRetrieval;
 
     @Value("${worker.max.task.num}")
     private int maxTaskNum;
 
     @Value("${worker.task.local.base.path}")
     private String taskLocalBasePath;
+
+    private Map<Long, AlloExecutor> executors = new ConcurrentHashMap<>();
+    private Set<Long> failOverTasks = new HashSet<>();
 
     private ExecutorService executorService;
 
@@ -50,31 +64,68 @@ public class WorkerBackend implements Service, TaskStateListener {
     public void submitTask(TaskBo task) {
         executorService.submit(
                 () -> {
-                    LocalExecutor executor =
-                            new LocalExecutor(task, sharedStorage, taskLocalBasePath);
+                    LocalAlloExecutor executor =
+                            new LocalAlloExecutor(task, sharedStorage, taskLocalBasePath);
 
+                    executors.put(task.getId(), executor);
                     executor.execute();
                 });
+    }
+
+    private void reportScheduler(TaskBo task) {
+        ZkScheduler leader = this.schedulerLeaderRetrieval.getLeader();
+        RpcClient.create(leader.getIp(), leader.getRcpPort()).updateTask(RpcUtils.toRpcTask(task));
     }
 
     public Future killTask(TaskBo task) {
         return null;
     }
 
-    @Override
-    public void onRunning(TaskBo task) {}
+    public void failOver() {
+        executors.entrySet().stream().forEach(entry -> {
+            failOverTasks.add(entry.getKey());
+            AlloExecutor executor = entry.getValue();
+            executor.kill();
+        });
+    }
 
     @Override
-    public void onKilled(TaskBo task) {}
+    public void onRunning(TaskBo task) {
+        reportScheduler(task);
+    }
 
     @Override
-    public void onSuccess(TaskBo task) {}
+    public void onKilled(TaskBo task) {
+        if (failOverTasks.contains(task.getId())) {
+            task.setTaskState(TaskState.FAIL_OVER);
+        }
+        reportScheduler(task);
+        executors.remove(task.getId());
+    }
 
     @Override
-    public void onFail(TaskBo task) {}
+    public void onSuccess(TaskBo task) {
+        if (failOverTasks.contains(task.getId())) {
+            task.setTaskState(TaskState.FAIL_OVER);
+        }
+        reportScheduler(task);
+        executors.remove(task.getId());
+    }
 
     @Override
-    public void onFailOver(TaskBo task) {}
+    public void onFail(TaskBo task) {
+        if (failOverTasks.contains(task.getId())) {
+            task.setTaskState(TaskState.FAIL_OVER);
+        }
+        reportScheduler(task);
+        executors.remove(task.getId());
+    }
+
+    @Override
+    public void onFailOver(TaskBo task) {
+        reportScheduler(task);
+        executors.remove(task.getId());
+    }
 
     @Override
     public void stop() throws Exception {

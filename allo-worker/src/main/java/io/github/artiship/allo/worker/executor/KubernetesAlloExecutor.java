@@ -17,7 +17,7 @@
 
 package io.github.artiship.allo.worker.executor;
 
-public class KubernetesExecutor implements Executor {
+public class KubernetesAlloExecutor implements AlloExecutor {
     @Override
     public void execute() {
 

@@ -37,14 +37,14 @@ import java.time.LocalDateTime;
 import java.util.concurrent.Future;
 
 @Slf4j
-public class LocalExecutor implements Executor {
+public class LocalAlloExecutor implements AlloExecutor {
     private final TaskBo task;
     private final SharedStorage sharedStorage;
     private final String taskLocalBasePath;
 
     private final TaskStateNotifier taskStateNotifier = new TaskStateNotifier();
 
-    public LocalExecutor(TaskBo task, SharedStorage sharedStorage, String taskLocalBasePath) {
+    public LocalAlloExecutor(TaskBo task, SharedStorage sharedStorage, String taskLocalBasePath) {
         this.task = task;
         this.sharedStorage = sharedStorage;
         this.taskLocalBasePath = taskLocalBasePath;
