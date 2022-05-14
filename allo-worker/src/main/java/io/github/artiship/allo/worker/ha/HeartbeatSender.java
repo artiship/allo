@@ -23,7 +23,7 @@ import io.github.artiship.allo.rpc.OsUtils;
 import io.github.artiship.allo.rpc.RpcClient;
 import io.github.artiship.allo.rpc.RpcUtils;
 import io.github.artiship.allo.rpc.api.RpcHeartbeat;
-import io.github.artiship.allo.worker.common.CommonCache;
+import io.github.artiship.allo.worker.api.WorkerBackend;
 import io.github.com.artiship.ha.SchedulerLeaderRetrieval;
 import io.github.com.artiship.ha.utils.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,16 +44,14 @@ import static java.time.LocalDateTime.now;
 public class HeartbeatSender implements Service {
     @Autowired private CuratorFramework zkClient;
     @Autowired private SchedulerLeaderRetrieval schedulerLeaderRetrieval;
+    @Autowired private WorkerBackend workerBackend;
 
     @Value("${arlo.worker.rpc.port}")
     private int rpcPort;
-
     @Value("${arlo.worker.group}")
     private String groups;
-
     @Value("${arlo.worker.max.task.num}")
     private int maxTask;
-
     @Value("${arlo.worker.heartbeat.interval}")
     private long heartbeatInterval;
 
@@ -64,7 +62,7 @@ public class HeartbeatSender implements Service {
                 .setHost(OsUtils.getHostIpAddress())
                 .setPort(rpcPort)
                 .setMaxTask(maxTask)
-                .setRunningTasks(CommonCache.currTaskCnt())
+                .setRunningTasks(workerBackend.getCurrentTaskCount())
                 .setCpuUsage(OsUtils.getCpuUsage())
                 .setMemoryUsage(OsUtils.getMemoryUsage())
                 .setTime(RpcUtils.toProtoTimestamp(now()))

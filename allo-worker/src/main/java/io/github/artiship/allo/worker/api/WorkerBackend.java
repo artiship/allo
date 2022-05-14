@@ -25,9 +25,10 @@ import io.github.artiship.allo.rpc.RpcClient;
 import io.github.artiship.allo.rpc.RpcUtils;
 import io.github.artiship.allo.storage.SharedStorage;
 import io.github.artiship.allo.worker.executor.AlloExecutor;
-import io.github.artiship.allo.worker.executor.LocalAlloExecutor;
+import io.github.artiship.allo.worker.executor.LocalExecutor;
 import io.github.com.artiship.ha.SchedulerLeaderRetrieval;
 import io.github.com.artiship.ha.TaskStateListener;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,8 +39,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
+@Slf4j
 @Component
 public class WorkerBackend implements Service, TaskStateListener {
     @Autowired private SharedStorage sharedStorage;
@@ -47,7 +48,6 @@ public class WorkerBackend implements Service, TaskStateListener {
 
     @Value("${worker.max.task.num}")
     private int maxTaskNum;
-
     @Value("${worker.task.local.base.path}")
     private String taskLocalBasePath;
 
@@ -64,8 +64,8 @@ public class WorkerBackend implements Service, TaskStateListener {
     public void submitTask(TaskBo task) {
         executorService.submit(
                 () -> {
-                    LocalAlloExecutor executor =
-                            new LocalAlloExecutor(task, sharedStorage, taskLocalBasePath);
+                    LocalExecutor executor =
+                            new LocalExecutor(task, sharedStorage, taskLocalBasePath);
 
                     executors.put(task.getId(), executor);
                     executor.execute();
@@ -77,8 +77,11 @@ public class WorkerBackend implements Service, TaskStateListener {
         RpcClient.create(leader.getIp(), leader.getRcpPort()).updateTask(RpcUtils.toRpcTask(task));
     }
 
-    public Future killTask(TaskBo task) {
-        return null;
+    public void killTask(TaskBo task) throws Exception {
+        AlloExecutor executor = this.executors.get(task.getId());
+        if (executor != null) {
+            executor.kill();
+        }
     }
 
     public void killAllTasks() {
@@ -86,7 +89,11 @@ public class WorkerBackend implements Service, TaskStateListener {
                 .forEach(
                         entry -> {
                             AlloExecutor executor = entry.getValue();
-                            executor.kill();
+                            try {
+                                executor.kill();
+                            } catch (Exception e) {
+                                log.warn("Task_{} kill fail.", entry.getKey(), e);
+                            }
                         });
     }
 
@@ -133,5 +140,9 @@ public class WorkerBackend implements Service, TaskStateListener {
         if (executorService != null) {
             executorService.shutdownNow();
         }
+    }
+
+    public int getCurrentTaskCount() {
+        return executors.size();
     }
 }

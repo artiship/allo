@@ -17,11 +17,11 @@
 
 package io.github.artiship.allo.worker.executor;
 
+import com.google.common.base.Strings;
 import io.github.artiship.allo.common.TimeUtils;
 import io.github.artiship.allo.model.bo.TaskBo;
 import io.github.artiship.allo.rpc.OsUtils;
 import io.github.artiship.allo.storage.SharedStorage;
-import io.github.artiship.allo.worker.common.CommonCache;
 import io.github.com.artiship.ha.GlobalConstants;
 import io.github.com.artiship.ha.TaskStateListener;
 import io.github.com.artiship.ha.TaskStateNotifier;
@@ -37,14 +37,17 @@ import java.time.LocalDateTime;
 import java.util.concurrent.Future;
 
 @Slf4j
-public class LocalAlloExecutor implements AlloExecutor {
+public class LocalExecutor implements AlloExecutor {
     private final TaskBo task;
     private final SharedStorage sharedStorage;
     private final String taskLocalBasePath;
 
     private final TaskStateNotifier taskStateNotifier = new TaskStateNotifier();
+    private Future future;
+    private Long pid;
+    private String applicationId;
 
-    public LocalAlloExecutor(TaskBo task, SharedStorage sharedStorage, String taskLocalBasePath) {
+    public LocalExecutor(TaskBo task, SharedStorage sharedStorage, String taskLocalBasePath) {
         this.task = task;
         this.sharedStorage = sharedStorage;
         this.taskLocalBasePath = taskLocalBasePath;
@@ -74,17 +77,16 @@ public class LocalAlloExecutor implements AlloExecutor {
                     .start();
 
             try {
-                Long pid = getLinuxPid(startedProcess.getProcess());
+                pid = getLinuxPid(startedProcess.getProcess());
                 task.setPid(pid);
                 log.info("Task_{}, process pid {}.", task.traceId(), pid);
 
                 taskStateNotifier.notifyRunning(task);
-                CommonCache.cachePid(task, pid);
             } catch (Exception e) {
                 log.warn("Task_{} get process id fail.", task.traceId());
             }
 
-            Future future = startedProcess.getFuture();
+            future = startedProcess.getFuture();
             ProcessResult processResult = (ProcessResult)future.get();
             if (processResult.getExitValue() != 0) {
                 taskStateNotifier.notifyFail(task);
@@ -115,12 +117,11 @@ public class LocalAlloExecutor implements AlloExecutor {
         protected void processLine(String line) {
             try {
                 sharedStorage.appendLog(line);
-                String applicationId = extractApplicationId(line);
+                applicationId = extractApplicationId(line);
 
                 if (applicationId != null && applicationId.length() > 0) {
                     task.addApplicationId(applicationId);
                     taskStateNotifier.notifyRunning(task);
-                    CommonCache.cacheApplicationId(task, applicationId);
                 }
             } catch (Exception e) {
                 log.warn("Task_{} process log fail.", task.traceId());
@@ -187,5 +188,17 @@ public class LocalAlloExecutor implements AlloExecutor {
     }
 
     @Override
-    public void kill() {}
+    public void kill() throws Exception {
+        if (!Strings.isNullOrEmpty(applicationId)) {
+            LinuxProcessUtils.killYarnApplicationById(applicationId);
+        }
+
+        if (pid != null) {
+            LinuxProcessUtils.killLinuxProcessByPid(pid);
+        }
+
+        if (future != null) {
+            future.cancel(true);
+        }
+    }
 }

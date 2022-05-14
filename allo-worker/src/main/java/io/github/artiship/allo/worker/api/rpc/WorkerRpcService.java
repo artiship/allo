@@ -26,13 +26,10 @@ import io.github.artiship.allo.rpc.api.RpcResponse;
 import io.github.artiship.allo.rpc.api.RpcTask;
 import io.github.artiship.allo.rpc.api.SchedulerServiceGrpc.SchedulerServiceImplBase;
 import io.github.artiship.allo.worker.api.WorkerBackend;
-import io.github.artiship.allo.worker.common.CommonCache;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.Future;
 
 /** */
 @Component
@@ -49,7 +46,6 @@ public class WorkerRpcService extends SchedulerServiceImplBase {
             schedulerTaskBo = RpcUtils.toTaskBo(rpcTask);
             workerBackend.submitTask(schedulerTaskBo);
             rpcResponseBuilder.setCode(200);
-            CommonCache.addOneTask();
         } catch (Exception e) {
             rpcResponseBuilder.setCode(500).setMessage(subErrorMsg(e));
             log.error(
@@ -67,8 +63,7 @@ public class WorkerRpcService extends SchedulerServiceImplBase {
         log.info("Get kill task request, rpcTask [{}]", rpcTask);
         RpcResponse.Builder rpcResponseBuilder = RpcResponse.newBuilder();
         try {
-            Future future = workerBackend.killTask(RpcUtils.toTaskBo(rpcTask));
-            future.get();
+            workerBackend.killTask(RpcUtils.toTaskBo(rpcTask));
             rpcResponseBuilder.setCode(200);
         } catch (Exception e) {
             rpcResponseBuilder.setCode(500).setMessage(subErrorMsg(e));
