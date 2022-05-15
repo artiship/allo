@@ -23,6 +23,7 @@ import io.github.artiship.allo.model.ha.ZkLostTask;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -239,7 +240,9 @@ public class TaskBo implements Comparable<TaskBo> {
     }
 
     public boolean isOssPathValid() {
-        if (this.jobStoragePath == null || this.jobStoragePath.length() == 0 || !jobStoragePath.contains("/")) {
+        if (this.jobStoragePath == null
+                || this.jobStoragePath.length() == 0
+                || !jobStoragePath.contains("/")) {
             return false;
         }
         return true;
@@ -274,5 +277,9 @@ public class TaskBo implements Comparable<TaskBo> {
         }
 
         this.applicationIds.add(applicationId);
+    }
+
+    public String getTaskLogPath() {
+        return "logs" + File.separator + this.getJobId() + File.separator + this.getId() + ".log";
     }
 }

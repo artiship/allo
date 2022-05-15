@@ -19,6 +19,7 @@ package io.github.artiship.allo.storage;
 
 public interface SharedStorage {
     void download(String sourcePath, String targetPath);
-
-    void appendLog(String log);
+    void appendLog(String logFilePath, String log);
+    String getLocalBasePath();
+    String getCloudBasePath();
 }

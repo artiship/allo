@@ -18,12 +18,10 @@
 package io.github.artiship.allo.storage;
 
 import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.model.GetObjectRequest;
-import com.aliyun.oss.model.ListObjectsRequest;
-import com.aliyun.oss.model.OSSObjectSummary;
-import com.aliyun.oss.model.ObjectListing;
+import com.aliyun.oss.model.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
@@ -38,12 +36,10 @@ public class OssStorage implements SharedStorage {
 
     private OSSClient ossClient;
     private OssConfig ossConfig;
-    private String localBasePath;
 
-    public OssStorage(OSSClient ossClient, OssConfig ossConfig, String localBasePath) {
+    public OssStorage(OSSClient ossClient, OssConfig ossConfig) {
         this.ossClient = ossClient;
         this.ossConfig = ossConfig;
-        this.localBasePath = localBasePath;
     }
 
     @Override
@@ -64,8 +60,28 @@ public class OssStorage implements SharedStorage {
     }
 
     @Override
-    public void appendLog(String log) {
+    public void appendLog(String logFilePath, String line) {
+        ObjectMetadata meta = new ObjectMetadata();
+        meta.setContentType("text/plain");
 
+        AppendObjectRequest appendObjectRequest =
+                new AppendObjectRequest(
+                        ossConfig.getBucket(),
+                        logFilePath,
+                        new ByteArrayInputStream(line.getBytes()),
+                        meta);
+
+        ossClient.appendObject(appendObjectRequest);
+    }
+
+    @Override
+    public String getLocalBasePath() {
+        return this.ossConfig.getLocalBasePath();
+    }
+
+    @Override
+    public String getCloudBasePath() {
+        return this.ossConfig.getCloudBasePath();
     }
 
     public boolean check(String packageLocalPath) {

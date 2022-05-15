@@ -40,17 +40,21 @@ import java.util.concurrent.Future;
 public class LocalExecutor implements AlloExecutor {
     private final TaskBo task;
     private final SharedStorage sharedStorage;
-    private final String taskLocalBasePath;
 
     private final TaskStateNotifier taskStateNotifier = new TaskStateNotifier();
     private Future future;
     private Long pid;
     private String applicationId;
+    private String jobCloudPath;
+    private String taskLocalPath;
+    private String taskLogCloudPath;
 
-    public LocalExecutor(TaskBo task, SharedStorage sharedStorage, String taskLocalBasePath) {
+    public LocalExecutor(TaskBo task, SharedStorage sharedStorage) {
         this.task = task;
         this.sharedStorage = sharedStorage;
-        this.taskLocalBasePath = taskLocalBasePath;
+        this.jobCloudPath = this.getJobCloudPath();
+        this.taskLocalPath = this.getTaskLocalPath();
+        this.taskLogCloudPath = this.getTaskLogCloudPath();
     }
 
     public void register(TaskStateListener listener) {
@@ -62,19 +66,20 @@ public class LocalExecutor implements AlloExecutor {
         try {
             taskStateNotifier.notifyRunning(task);
 
-            sharedStorage.download(task.getJobStoragePath(), getTaskLocalPath());
+            sharedStorage.download(this.jobCloudPath, this.taskLocalPath);
 
             String runCommand = buildRunShellCommand();
 
-            sharedStorage.appendLog(runCommand);
-            sharedStorage.appendLog("worker=" + OsUtils.getHostIpAddress());
+            sharedStorage.appendLog(this.taskLogCloudPath, runCommand);
+            sharedStorage.appendLog(this.taskLogCloudPath, "worker=" + OsUtils.getHostIpAddress());
 
-            StartedProcess startedProcess = new ProcessExecutor()
-                    .command("/bin/bash", "-c", runCommand)
-                    .redirectError(new LogHandler())
-                    .redirectOutput(new LogHandler())
-                    .destroyOnExit()
-                    .start();
+            StartedProcess startedProcess =
+                    new ProcessExecutor()
+                            .command("/bin/bash", "-c", runCommand)
+                            .redirectError(new LogHandler())
+                            .redirectOutput(new LogHandler())
+                            .destroyOnExit()
+                            .start();
 
             try {
                 pid = getLinuxPid(startedProcess.getProcess());
@@ -87,7 +92,7 @@ public class LocalExecutor implements AlloExecutor {
             }
 
             future = startedProcess.getFuture();
-            ProcessResult processResult = (ProcessResult)future.get();
+            ProcessResult processResult = (ProcessResult) future.get();
             if (processResult.getExitValue() != 0) {
                 taskStateNotifier.notifyFail(task);
             }
@@ -99,9 +104,17 @@ public class LocalExecutor implements AlloExecutor {
         taskStateNotifier.notifySuccess(task);
     }
 
-    private Long getLinuxPid(Process process) throws Exception{
+    private String getJobCloudPath() {
+        return sharedStorage.getCloudBasePath() + File.separator + task.getJobStoragePath();
+    }
+
+    private String getTaskLogCloudPath() {
+        return sharedStorage.getCloudBasePath() + File.separator + task.getTaskLogPath();
+    }
+
+    private Long getLinuxPid(Process process) throws Exception {
         long pid = -1;
-        Class<?>  clazz = Class.forName("java.lang.UNIXProcess");
+        Class<?> clazz = Class.forName("java.lang.UNIXProcess");
         Field field = clazz.getDeclaredField("pid");
         field.setAccessible(true);
         pid = (Integer) field.get(process);
@@ -116,7 +129,7 @@ public class LocalExecutor implements AlloExecutor {
         @Override
         protected void processLine(String line) {
             try {
-                sharedStorage.appendLog(line);
+                sharedStorage.appendLog(taskLogCloudPath, line);
                 applicationId = extractApplicationId(line);
 
                 if (applicationId != null && applicationId.length() > 0) {
@@ -129,9 +142,9 @@ public class LocalExecutor implements AlloExecutor {
         }
 
         private String extractApplicationId(String log) {
-            if(log.contains(SPARK_APPLICATION_ID_TAG)) {
+            if (log.contains(SPARK_APPLICATION_ID_TAG)) {
                 return getApplicationIdBySparkLog(log, SPARK_APPLICATION_ID_TAG);
-            } else if(log.contains(HIVE_APPLICATION_ID_TAG)) {
+            } else if (log.contains(HIVE_APPLICATION_ID_TAG)) {
                 return getApplicationIdByHiveLog(log, APPLICATION_ID_TAG);
             }
             return "";
@@ -139,7 +152,7 @@ public class LocalExecutor implements AlloExecutor {
 
         private String getApplicationIdBySparkLog(String runningLog, String applicationIdTag) {
             int startIndex = runningLog.indexOf(applicationIdTag);
-            if(startIndex != -1) {
+            if (startIndex != -1) {
                 return runningLog.substring(startIndex + applicationIdTag.length());
             }
             return "";
@@ -149,7 +162,7 @@ public class LocalExecutor implements AlloExecutor {
             int startIndex = runningLog.indexOf(applicationIdTag);
             int endIndex = runningLog.length() - 1;
 
-            if(startIndex!=-1 && startIndex <= endIndex) {
+            if (startIndex != -1 && startIndex <= endIndex) {
                 return runningLog.substring(startIndex, endIndex);
             }
 
@@ -160,7 +173,7 @@ public class LocalExecutor implements AlloExecutor {
     private String buildRunShellCommand() {
         return new StringBuilder()
                 .append("cd ")
-                .append(this.taskLocalBasePath)
+                .append(sharedStorage)
                 .append(";")
                 .append("dos2unix *.sh;")
                 .append("chmod 777 *.sh;")
@@ -177,7 +190,7 @@ public class LocalExecutor implements AlloExecutor {
 
     private String getTaskLocalPath() {
         return new StringBuilder()
-                .append(taskLocalBasePath)
+                .append(sharedStorage.getLocalBasePath())
                 .append(File.separator)
                 .append(TimeUtils.toStr(LocalDateTime.now()))
                 .append(File.separator)

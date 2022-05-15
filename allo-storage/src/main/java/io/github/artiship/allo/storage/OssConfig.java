@@ -28,4 +28,6 @@ public class OssConfig {
     private String secret;
     private String bucket;
     private Integer listMaxKeys;
+    private String cloudBasePath;
+    private String localBasePath;
 }

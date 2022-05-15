@@ -65,7 +65,7 @@ public class WorkerBackend implements Service, TaskStateListener {
         executorService.submit(
                 () -> {
                     LocalExecutor executor =
-                            new LocalExecutor(task, sharedStorage, taskLocalBasePath);
+                            new LocalExecutor(task, sharedStorage);
 
                     executors.put(task.getId(), executor);
                     executor.execute();
